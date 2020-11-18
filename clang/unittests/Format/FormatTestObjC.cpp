@@ -18,6 +18,7 @@
 #define DEBUG_TYPE "format-test"
 
 using clang::tooling::ReplacementTest;
+using testing::internal::ScopedTrace;
 
 namespace clang {
 namespace format {
@@ -51,17 +52,23 @@ protected:
     return *Result;
   }
 
-  void verifyFormat(StringRef Code) {
+  void _verifyFormat(const char *File, int Line, StringRef Code) {
+    ScopedTrace t(File, Line, ::testing::Message() << Code.str());
     EXPECT_EQ(Code.str(), format(Code)) << "Expected code is not stable";
     EXPECT_EQ(Code.str(), format(test::messUp(Code)));
   }
 
-  void verifyIncompleteFormat(StringRef Code) {
+  void _verifyIncompleteFormat(const char *File, int Line, StringRef Code) {
+    ScopedTrace t(File, Line, ::testing::Message() << Code.str());
     EXPECT_EQ(Code.str(), format(test::messUp(Code), SC_ExpectIncomplete));
   }
 
   FormatStyle Style;
 };
+
+#define verifyIncompleteFormat(...)                                            \
+  _verifyIncompleteFormat(__FILE__, __LINE__, __VA_ARGS__)
+#define verifyFormat(...) _verifyFormat(__FILE__, __LINE__, __VA_ARGS__)
 
 TEST(FormatTestObjCStyle, DetectsObjCInHeaders) {
   auto Style = getStyle("LLVM", "a.h", "none",
