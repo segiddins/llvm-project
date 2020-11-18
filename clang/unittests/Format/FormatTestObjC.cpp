@@ -1486,6 +1486,13 @@ TEST_F(FormatTestObjC, BreakLineBeforeNestedBlockParam) {
                "} withTimeout:5 completionHandler:^{\n"
                "  doStuff();\n"
                "}];");
+  verifyFormat(
+      "[self setupTextFieldSignals:@[\n"
+      "  self.documentWidthField,\n"
+      "  self.documentHeightField,\n"
+      "] solver:^(NSTextField *textField) {\n"
+      "  return [self.representedObject solveEquationForTextField:textField];\n"
+      "}];");
 }
 
 TEST_F(FormatTestObjC, IfNotUnlikely) {
