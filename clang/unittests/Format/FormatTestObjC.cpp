@@ -1460,6 +1460,32 @@ TEST_F(FormatTestObjC, BreakLineBeforeNestedBlockParam) {
       "           callback:^(typeof(self) self, NSNumber *u, NSNumber *v) {\n"
       "             u = v;\n"
       "           }]");
+
+  verifyFormat("[self block:^(void) {\n"
+               "  doStuff();\n"
+               "} completionHandler:^(void) {\n"
+               "  doStuff();\n"
+               "  [self block:^(void) {\n"
+               "    doStuff();\n"
+               "  } completionHandler:^(void) {\n"
+               "    doStuff();\n"
+               "  }];\n"
+               "}];");
+
+  Style.ColumnLimit = 0;
+  verifyFormat("[[SessionService sharedService] "
+               "loadWindowWithCompletionBlock:^(SessionWindow *window) {\n"
+               "  if (window) {\n"
+               "    [self windowDidLoad:window];\n"
+               "  } else {\n"
+               "    [self errorLoadingWindow];\n"
+               "  }\n"
+               "}];");
+  verifyFormat("[controller test:^{\n"
+               "  doStuff();\n"
+               "} withTimeout:5 completionHandler:^{\n"
+               "  doStuff();\n"
+               "}];");
 }
 
 TEST_F(FormatTestObjC, IfNotUnlikely) {
