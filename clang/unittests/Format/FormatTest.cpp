@@ -10253,6 +10253,24 @@ TEST_F(FormatTest, FormatForObjectiveCMethodDecls) {
                "               anotherName:(NSString)bbbbbbbbbbbbbb {\n"
                "}",
                Style);
+  EXPECT_EQ("- (SomeType *)arg1:(id)arg1\n"
+            "    veryLooooongName:(NSString)aaaaaaaaaaaaaa\n"
+            "         anotherName:(NSString)bbbbbbbbbbbbbb {\n"
+            "}",
+            format("- (SomeType *)arg1:(id)arg1\n"
+                   "  veryLooooongName:(NSString)aaaaaaaaaaaaaa\n"
+                   "       anotherName:(NSString)bbbbbbbbbbbbbb {\n"
+                   "}",
+                   Style));
+  EXPECT_EQ("- (SomeType *)arg1:(id)arg1\n"
+            "    veryLoooooooongName:(NSString)aaaaaaaaaaaaaa\n"
+            "            anotherName:(NSString)bbbbbbbbbbbbbb {\n"
+            "}",
+            format("- (SomeType *)arg1:(id)arg1\n"
+                   "veryLoooooooongName:(NSString)aaaaaaaaaaaaaa\n"
+                   "        anotherName:(NSString)bbbbbbbbbbbbbb {\n"
+                   "}",
+                   Style));
   Style.IndentWrappedFunctionNames = true;
   verifyFormat("- (SomeLooooooooooooooooooooongType *)\n"
                "    veryLooooooooooongName:(NSString)cccccccccccccc\n"
