@@ -10208,6 +10208,49 @@ TEST_F(FormatTest, SkipsDeeplyNestedLines) {
 // Objective-C tests.
 //===----------------------------------------------------------------------===//
 
+TEST_F(FormatTest, FormatForObjectiveCLiteralReceivers) {
+  FormatStyle Style = getLLVMStyle();
+
+  Style.Cpp11BracedListStyle = true;
+  Style.ConstructorInitializerAllOnOneLineOrOnePerLine = true;
+  Style.PenaltyBreakComment = 300;
+  Style.PenaltyBreakBeforeFirstCallParameter = 300;
+  Style.BinPackArguments = true;
+  Style.ColumnLimit = 0;
+
+  verifyFormat("id c = @[ @123, @321 ].copy;", Style);
+  verifyFormat("id copy = @[\n"
+               "  @123,\n"
+               "  @321,\n"
+               "  @4321,\n"
+               "  @54321,\n"
+               "].copy;",
+               Style);
+  verifyFormat("__ABCDEFGH = @[\n"
+               "  @\"AB\",\n"
+               "  @\"CD\",\n"
+               "  @\"EF\",\n"
+               "  @\"GH\",\n"
+               "  @\"HELP\",\n"
+               "].copy;\n",
+               Style);
+  // TODO: figure out why this breaks differently with the added comment line
+  verifyFormat("__ABCDEFGH = @[\n"
+               "  @\"AB\", @\"CD\", @\"EF\", @\"GH\", @\"HELP\",\n"
+               "  // @\"NO\"\n"
+               "].copy;\n",
+               Style);
+  verifyFormat("__ABCDEFGH = @[\n"
+               "  @\"AB\",\n"
+               "  @\"CD\",\n"
+               "  // @\"NO\"\n"
+               "  @\"EF\",\n"
+               "  @\"GH\",\n"
+               "  @\"HELP\",\n"
+               "].copy;\n",
+               Style);
+}
+
 TEST_F(FormatTest, FormatForObjectiveCMethodDecls) {
   verifyFormat("- (void)sendAction:(SEL)aSelector to:(BOOL)anObject;");
   EXPECT_EQ("- (NSUInteger)indexOfObject:(id)anObject;",
